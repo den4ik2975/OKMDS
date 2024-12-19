@@ -1,7 +1,6 @@
 # 0. Импортируем необходимые библиотеки
 import numpy as np  # numpy для математических вычислений
-import matplotlib.pyplot as plt  # для создания графиков
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plot  # для создания графиков
 from matplotlib.animation import FuncAnimation  # для анимации
 from scipy.integrate import odeint  # для решения дифференциальных уравнений
 
@@ -71,18 +70,20 @@ N_nu = -m * (l_val * ddphi + r * dphi * dphi + 2 * dl * dphi) * np.sin(phi) + \
        m * (ddx - l_val * dphi * dphi) * np.cos(phi) - c * y - (M + m) * g
 
 # 6. Создаем фигуру с сеткой для графиков
-fgr = plt.figure(figsize=(9, 6))
-gs = fgr.add_gridspec(4, 2, width_ratios=[1, 0.8])
+fgr_gr = plot.figure(figsize=(9, 7))
+gs = fgr_gr.add_gridspec(4, 1)
 
-# 7. Создаем подграфики
-gr = fgr.add_subplot(gs[:, 0])  # область для анимации
-gr.axis('equal')
+fgr = plot.figure(figsize=(5, 7))
+gr = fgr.add_subplot(1, 1, 1)
+gr.set_aspect('equal')
+gr.set_xlim(1, 5)
+gr.set_ylim(-1, 6)
 
-# Создаем 4 графика справа
-ax1 = fgr.add_subplot(gs[0, 1])
-ax2 = fgr.add_subplot(gs[1, 1])
-ax3 = fgr.add_subplot(gs[2, 1])
-ax4 = fgr.add_subplot(gs[3, 1])
+# 7. Создаем графики
+ax1 = fgr_gr.add_subplot(gs[0, 0])
+ax2 = fgr_gr.add_subplot(gs[1, 0])
+ax3 = fgr_gr.add_subplot(gs[2, 0])
+ax4 = fgr_gr.add_subplot(gs[3, 0])
 
 # 8. Строим графики зависимостей
 line_y, = ax1.plot([], [], 'b-')
@@ -90,24 +91,28 @@ ax1.set_title('x(t)')
 ax1.grid(True)
 ax1.set_xlim(START_VALUE, END_VALUE)
 ax1.set_ylim(min(y) * 1.1, max(y) * 1.1)
+line_y.set_data(t[:], y[:])
 
 line_phi, = ax2.plot([], [], 'r-')
 ax2.set_title('phi(t)')
 ax2.grid(True)
 ax2.set_xlim(START_VALUE, END_VALUE)
 ax2.set_ylim(min(phi) * 1.1, max(phi) * 1.1)
+line_phi.set_data(t[:], phi[:])
 
 line_n_eps, = ax3.plot([], [], 'g-')
 ax3.set_title('N_eps(t)')
 ax3.grid(True)
 ax3.set_xlim(START_VALUE, END_VALUE)
 ax3.set_ylim(min(N_eps) * 1.1, max(N_eps) * 1.1)
+line_n_eps.set_data(t[:], N_eps[:])
 
 line_n_nu, = ax4.plot([], [], 'm-')
 ax4.set_title('N_nu(t)')
 ax4.grid(True)
 ax4.set_xlim(START_VALUE, END_VALUE)
 ax4.set_ylim(min(N_nu), max(N_nu))
+line_n_nu.set_data(t[:], N_nu[:])
 
 # 9. Задаем параметры анимации
 XO = 3  # x-координата центра блока
@@ -155,17 +160,10 @@ def run(i):
     L.set_data([XO + RB, XO + RB], [YO, YO + y_r[i]])
     Pruzh.set_data(XO + RB + Xp, (YO + y_r[i]) * Yp)
 
-    # Обновляем графики
-    line_y.set_data(t[:i], y[:i])
-    line_phi.set_data(t[:i], phi[:i])
-    line_n_eps.set_data(t[:i], N_eps[:i])
-    line_n_nu.set_data(t[:i], N_nu[:i])
-
-    return [m, AB, Block, Pruzh, line_y, line_phi, line_n_eps, line_n_nu]
+    return [m, AB, Block, Pruzh]
 
 # 16. Создаем и показываем анимацию
-plt.tight_layout()  # оптимизируем расположение графиков
 anim = FuncAnimation(fgr, run, frames=STEPS, interval=1)  # создаем анимацию
 
 # Показываем результат
-plt.show()
+plot.show()

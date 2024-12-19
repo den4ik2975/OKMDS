@@ -5,10 +5,12 @@ import matplotlib.pyplot as plot  # для создания графиков
 from matplotlib.animation import FuncAnimation  # для анимации
 
 # 1. Создаем фигуру и оси для графика
-fgr = plot.figure(figsize=(9, 6))
-gs = fgr.add_gridspec(4, 2)
-gr = fgr.add_subplot(gs[:, 0])  # механизм занимает всю левую часть
-gr.axis('equal')
+fgr_gr = plot.figure(figsize=(9, 7))
+gs = fgr_gr.add_gridspec(4, 1)
+
+fgr = plot.figure()
+gr = fgr.add_subplot(1, 1, 1)
+gr.axis('equal')  # устанавливаем одинаковый масштаб по осям
 
 # 2. Задаем основные параметры
 STEPS = 1000
@@ -64,10 +66,10 @@ Pruzh = gr.plot(XO + RB + Xp, (YO + y_r[0]) * Yp)[0]  # рисуем пружи�
 
 
 # 8. Создаем графики
-vx_plot = fgr.add_subplot(gs[0, 1])  # скорость по x
-vy_plot = fgr.add_subplot(gs[1, 1])  # скорость по y
-ax_plot = fgr.add_subplot(gs[2, 1])  # ускорение по x
-ay_plot = fgr.add_subplot(gs[3, 1])  # ускорение по y
+vx_plot = fgr_gr.add_subplot(gs[0, 0])  # скорость по x
+vy_plot = fgr_gr.add_subplot(gs[1, 0])  # скорость по y
+ax_plot = fgr_gr.add_subplot(gs[2, 0])  # ускорение по x
+ay_plot = fgr_gr.add_subplot(gs[3, 0])  # ускорение по y
 
 # Добавляем расчет скоростей и ускорений
 dt = (END_VALUE - START_VALUE) / STEPS
@@ -93,10 +95,10 @@ for subplot in [vx_plot, vy_plot, ax_plot, ay_plot]:
     subplot.legend()
     subplot.set_xlim(0, END_VALUE)
 
-vx_plot.set_ylabel('Скорость по X')
-vy_plot.set_ylabel('Скорость по Y')
-ax_plot.set_ylabel('Ускорение по X')
-ay_plot.set_ylabel('Ускорение по Y')
+vx_plot.set_ylabel('Vx')
+vy_plot.set_ylabel('Vy')
+ax_plot.set_ylabel('Wx')
+ay_plot.set_ylabel('Wy')
 ax_plot.set_xlabel('Время')
 ay_plot.set_xlabel('Время')
 
@@ -105,6 +107,11 @@ vx_plot.set_ylim(np.min(vx)*1.1, np.max(vx)*1.1)
 vy_plot.set_ylim(np.min(vy)*1.1, np.max(vy)*1.1)
 ax_plot.set_ylim(np.min(ax)*1.1, np.max(ax)*1.1)
 ay_plot.set_ylim(np.min(ay)*1.1, np.max(ay)*1.1)
+
+vx_line.set_data(time_array[:], vx[:])
+vy_line.set_data(time_array[:], vy[:])
+ax_line.set_data(time_array[:], ax[:])
+ay_line.set_data(time_array[:], ay[:])
 
 
 # 9. Функция обновления кадров анимации
@@ -116,12 +123,8 @@ def run(i):
     Pruzh.set_data(XO + RB + Xp, (YO + y_r[i]) * Yp)
 
     # Обновляем графики
-    vx_line.set_data(time_array[:i], vx[:i])
-    vy_line.set_data(time_array[:i], vy[:i])
-    ax_line.set_data(time_array[:i], ax[:i])
-    ay_line.set_data(time_array[:i], ay[:i])
 
-    return [m, AB, Block, Pruzh, vx_line, vy_line, ax_line, ay_line]
+    return [m, AB, Block, Pruzh]
 
 
 # 10. Создаем анимацию
